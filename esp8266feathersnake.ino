@@ -53,8 +53,8 @@ class Snake {
   Direction dir = right;
   struct body *head;
   struct body *tail;
-
   bool snake_map[GRID_X][GRID_Y] = {{false}};
+  uint16_t len;
   
   public:
   Snake(){
@@ -76,6 +76,8 @@ class Snake {
 
     snake_map[0][0] = true;
     snake_map[1][0] = true;
+
+    len = 2;
   }
 
   void changeDir(Direction dir){
@@ -136,6 +138,10 @@ class Snake {
     return ret;
   }
 
+  uint16_t getLength(){
+      return len;
+    }
+
   move_response * tick(uint8_t x, uint8_t y){
     struct coord *move_to = new coord;
     move_to->x = head->xy->x;
@@ -173,6 +179,7 @@ class Snake {
     bool feed = false;
     if(x == move_to->x && y == move_to->y){
       feed = true;
+      len++;
     }
 
     snake_map[move_to->x][move_to->y] = true;
@@ -353,13 +360,26 @@ void snake(){
     if(millis() - last_draw >= speed){
       last_draw = millis();
       speed_count++;
-      if(speed_count == 5 && speed > 40){
+      if(speed_count == 25 && speed > 20){
         speed_count = 0;
         speed--;
       }
       move_response *response = snake->tick(food->x, food->y);
       if(response == NULL){
         alive = false;
+        uint16_t score = snake->getLength() - 2;
+        tft.fillScreen(ST77XX_BLACK);
+        tft.setTextColor(ST77XX_RED);
+        tft.setTextWrap(false);
+        tft.setCursor(0, 0);
+        tft.setTextSize(3);
+        tft.println("Game Over");
+        tft.setTextSize(2);
+        tft.setTextColor(ST77XX_WHITE);
+        tft.print("Score ");
+        tft.println(score);
+        tft.setTextColor(ST77XX_WHITE);
+        delay(1500);
         //TODO Cleanup
       } else {
         drawSquare(response->to_draw->x, response->to_draw->y, ST77XX_WHITE);
