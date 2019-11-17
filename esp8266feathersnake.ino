@@ -101,8 +101,9 @@ class Snake {
     uint8_t x = random(0, GRID_X - 1);
     uint8_t y = random(0, GRID_Y - 1);
     bool visited[GRID_X][GRID_Y] = {{false}};
-    DataQueue<int> xQueue(20);
-    DataQueue<int> yQueue(20);
+    // Being lazy, using 2 queues instead of queue of coord
+    DataQueue<uint8_t> xQueue(20);
+    DataQueue<uint8_t> yQueue(20);
     xQueue.enqueue(x);
     yQueue.enqueue(y);
     while(!xQueue.isEmpty()){
